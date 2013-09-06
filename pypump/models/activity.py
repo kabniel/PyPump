@@ -111,6 +111,8 @@ class Activity(AbstractModel):
 
         dataobj = data["object"]
         obj_type = dataobj["objectType"].capitalize()
+        print(obj_type)
+        print getattr(cls._pump, obj_type)
 
         if "author" not in dataobj:
             # author is not set for posted objects in inbox/major, so we add it

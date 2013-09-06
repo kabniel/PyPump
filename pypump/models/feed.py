@@ -80,9 +80,9 @@ class Feed(AbstractModel):
     def items(self):
         return ItemList(self)
 
-    def __init__(self, parent, endpoint=None, totalItems=None):
+    def __init__(self, parent, endpoint=None, totalItems=0):
         self._parent = parent
-        self.totalItems = totalItems if totalItems else self.totalItems
+        self.totalItems = totalItems
         self._pump = self._parent._pump
         if endpoint is not None:
             self._ENDPOINT = endpoint
