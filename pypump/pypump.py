@@ -37,7 +37,8 @@ from pypump.models.image import Image
 from pypump.models.location import Location
 from pypump.models.activity import Activity
 from pypump.models.collection import Collection, Public
-from pypump.models.activityobject import ActivityObject, Note
+import pypump.models.activityobject
+import pypump.util
 
 class PyPump(object):
 
@@ -97,10 +98,11 @@ class PyPump(object):
 
     def populate_models(self):
         # todo: change me
-        self.ActivityObject = ActivityObject
-        self.ActivityObject._pump = self
+        self.activityobject = pypump.models.activityobject
+        self.activityobject.ActivityObject._pump = self
+        self.activityobject.attr_setter = pypump.util.AttrSetter(pypump=self)
 
-        self.Note = Note
+        self.Note = self.activityobject.Note
         #self.Note._pump = self
 
         self.Collection = Collection
@@ -112,8 +114,8 @@ class PyPump(object):
         self.Image = Image
         self.Image._pump = self
 
-        self.Person = Person
-        self.Person._pump = self
+        self.Person = self.activityobject.Person
+        #self.Person._pump = self
 
         self.Location = Location
         self.Location._pump = self

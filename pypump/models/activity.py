@@ -99,7 +99,7 @@ class Activity(AbstractModel):
         return '<Activity: {webfinger} {verb}ed {model}>'.format(
                 webfinger=self.actor.id[5:], # [5:] to strip of acct:
                 verb=self.verb.rstrip("e"), # english: e + ed = ed
-                model=self.obj.objectType
+                model=self.obj.object_type
                 )
 
     def __str__(self):
@@ -110,22 +110,15 @@ class Activity(AbstractModel):
         """ From JSON -> Activity object """
 
         dataobj = data["object"]
-        obj_type = dataobj["objectType"].capitalize()
-        print(obj_type)
-        print getattr(cls._pump, obj_type)
 
         if "author" not in dataobj:
             # author is not set for posted objects in inbox/major, so we add it
             dataobj["author"] = data["actor"]
 
-        try:
-            objekt = getattr(cls._pump, obj_type)
-            obj = objekt.unserialize(dataobj)
-        except AttributeError:
-            obj = Unknown.unserialize(dataobj)
+        obj = cls._pump.activityobject.attr_setter.get_object(dataobj)
 
         verb = data["verb"]
-        actor = cls._pump.Person.unserialize(data["actor"])
+        actor = cls._pump.activityobject.attr_setter.get_object(data["actor"])
         # generator is not always there (at least not for verb:'update' obj:Person)
         generator = Generator.unserialize(data["generator"]) if "generator" in data else None
         updated = parse(data["updated"])

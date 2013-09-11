@@ -15,93 +15,87 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from pypump.models.feed import Feed
-
 class ActivityObject(object):
     """ Super class for all activity objects """
 
-    _attributes = {"attachments",
-                  "author",
-                  "content",
-                  "display_name",
-                  "downstream_duplicates",
-                  "id",
-                  "image",
-                  "in_reply_to",
-                  "likes",
-                  "links",
-                  "object_type",
-                  "published",
-                  "replies",
-                  "shares",
-                  "summary",
-                  "updated",
-                  "upstream_duplicates",
-                  "url"}
+    _attr_map = {
+        "attachments": "attachments",
+        "author": "author",
+        "content": "content",
+        "display_name": "displayName",
+        "downstream_duplicates": "downstreamDuplicates",
+        "id": "id",
+        "image": "image",
+        "in_reply_to": "inReplyTo",
+        "likes": "likes",
+        "links": "links",
+        "object_type": "objectType",
+        "published": "published",
+        "replies": "replies",
+        "shares": "shares",
+        "summary": "summary",
+        "updated": "updated",
+        "upstream_duplicates": "upstreamDuplicates",
+        "url": "url"}
 
     def __init__(self, *args, **kwargs):
         print('activityobject.__init__')
-        for i in self._attributes:
-            setattr(self, i, kwargs.get(i, None))
+        self._noattr = kwargs.get("noattr", list())
+
+        if "jsondata" in kwargs:
+            for (k, v) in self._attr_map.items():
+                if v in kwargs["jsondata"] and k not in self._noattr:
+                    self._pump.activityobject.attr_setter.set_attr(self, k, kwargs["jsondata"][v], from_json=True)
+        else:
+            for (k, v) in self._attr_map.items():
+                if k in kwargs and k not in self._noattr:
+                    self._pump.activityobject.attr_setter.set_attr(self, k, kwargs[k])
+
     
-    @classmethod
-    def unserialize(cls, data, obj=None):
-        print('activityobject.unserialize')
-
-        obj = obj or cls()
-
-        author = obj._pump.Person.unserialize(data.get("author", None))
-        if data.get('likes', None):
-            likes = Feed.unserialize(data=data.get('likes'), parent=obj)
-        
-        attributes = {
-            'attachments': data.get("attachments", None),
-            'author': author,
-            'content': data.get("content", None),
-            'display_name': data.get("displayName", None),
-            'downstream_duplicates': data.get("downstreamDuplicates", None),
-            'id': data.get("id", None),
-            'image': data.get("image", None),
-            'in_reply_to': data.get("inReplyTo", None),
-            'likes': likes,
-            'links': data.get("links", None),
-            'object_type': data.get("objectType", None),
-            'published': data.get("published", None),
-            'replies': data.get("replies", None),
-            'shares': data.get("shares", None),
-            'summary': data.get("summary", None),
-            'updated': data.get("updated", None),
-            'upstream_duplicates': data.get("upstreamDuplicates", None),
-            'url': data.get("url", None),
-        }
-
-        for k,v in attributes.items():
-            setattr(obj, k, v)
-
-        return obj
-
 class Note(ActivityObject):
     """ pump.io Note object """
 
-    # attributes that we should delete
+    # attributes that we dont want
     _noattr = ["attachments", "display_name", "image", "summary"]
 
     def __init__(self, *args, **kwargs):
         print('note.__init__')
-        super(Note, self).__init__(*args, **kwargs)
+        # Let ActivityObject handle common things first
+        super(Note, self).__init__(noattr=self._noattr, *args, **kwargs)
 
-        # delete unwanted attributes
-        for i in self._noattr:
-            delattr(self, i)
+    # TODO Add Note-specific methods and stuff here
 
-    @classmethod
-    def unserialize(cls, data, obj=None):
-        print('note.unserialize')
-        obj = obj or cls()
-        obj = super(Note, obj).unserialize(data, obj=obj)
 
-        for i in obj._noattr:
-            delattr(obj, i)
+from pypump.models.feed import Inbox
 
-        return obj
+class Person(ActivityObject):
+    """ pump.io Person object """
 
+    # attributes that we dont want
+    _noattr = ["attachments"]
+
+    def __init__(self, webfinger=None, *args, **kwargs):
+        print('person.__init__')
+        # If a webfinger is entered, grab jsondata from API and re-init with data
+        if webfinger:
+            self.username, self.server = webfinger.split("@")
+
+            data = self._pump.request("{proto}://{server}/api/user/{username}/profile".format(
+                proto=self._pump.protocol,
+                server=self.server,
+                username=self.username
+            ))
+
+            self.__init__(jsondata=data)
+
+        else:
+            # Let ActivityObject handle common things first
+            super(Person, self).__init__(noattr=self._noattr, *args, **kwargs)
+
+            self.username, self.server = self.id[5:].split("@")
+
+        if self.username == self._pump.nickname and self.server == self._pump.server:
+            self.inbox = Inbox(self)
+
+
+    # TODO Add Person-specific methods and properties here
