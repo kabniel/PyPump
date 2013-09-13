@@ -1,20 +1,37 @@
-class AttrSetter(object):
+class Attribute(object):
+
+    _strings = ["content", "display_name", "id", "object_type",
+                "summary", "url", "preferred_username"]
+
+    _dates = ["updated", "published"]
+
     def __init__(self, pypump=None):
         self._pump = pypump
 
-    def set_attr(self, obj, key, data, from_json=False):
-        if key == "attachment":
-            self.set_attachment(obj, key, data, from_json)
+    def parse_map(self, obj, attr_map, *args, **kwargs):
+        if "jsondata" in kwargs:
+            for (k, v) in attr_map.items():
+                if v in kwargs["jsondata"] and k not in obj._ignore_attr:
+                    self.add(obj, k, kwargs["jsondata"][v], from_json=True)
+        else:
+            for (k, v) in attr_map.items():
+                if k in kwargs and k not in obj._ignore_attr:
+                    self.add(obj, k, kwargs[k]) 
+
+    def add(self, obj, key, data, from_json=False):
+
+        if key in self._strings:
+            # set string attributes
+            self.set_string(obj, key, data, from_json)
+
+        elif key in self._dates:
+            # set date attributes
+            self.set_date(obj, key, data, from_json)
+
         elif key == "author":
             self.set_person(obj, key, data, from_json)
-        elif key == "content":
-            self.set_string(obj, key, data, from_json)
-        elif key == "display_name":
-            self.set_string(obj, key, data, from_json)
         elif key == "downstream_duplicates":
             self.set_downstream_duplicates(obj, key, data, from_json)
-        elif key == "id":
-            self.set_string(obj, key, data, from_json)
         elif key == "image":
             self.set_image(obj, key, data, from_json)
         elif key == "in_reply_to":
@@ -23,27 +40,18 @@ class AttrSetter(object):
             self.set_likes(obj, key, data, from_json)
         elif key == "links":
             self.set_links(obj, key, data, from_json)
-        elif key == "object_type":
-            self.set_string(obj, key, data, from_json)
-        elif key == "published":
-            self.set_date(obj, key, data, from_json)
         elif key == "replies":
             self.set_replies(obj, key, data, from_json)
         elif key == "shares":
             self.set_shares(obj, key, data, from_json)
-        elif key == "summary":
-            self.set_string(obj, key, data, from_json)
-        elif key == "updated":
-            self.set_date(obj, key, data, from_json)
         elif key == "upstream_duplicates":
             self.set_upstream_duplicates(obj, key, data, from_json)
-        elif key == "url":
-            self.set_string(obj, key, data, from_json)
 
 
     def set_attachment(self, obj, key, data, from_json):
-        # TODO
-        pass
+        #TODO not finished
+        if from_json:
+            setattr(obj, key, data)
 
     def set_person(self, obj, key, data, from_json):
         if from_json:
@@ -53,16 +61,19 @@ class AttrSetter(object):
         setattr(obj, key, data)
 
     def set_downstream_duplicates(self, obj, key, data, from_json):
-        # TODO
-        pass
+        #TODO not finished
+        if from_json:
+            setattr(obj, key, data)
 
     def set_upstream_duplicates(self, obj, key, data, from_json):
-        # TODO
-        pass
+        #TODO not finished
+        if from_json:
+            setattr(obj, key, data)
 
     def set_image(self, obj, key, data, from_json):
-        # TODO
-        pass
+        #TODO not finished
+        if from_json:
+            setattr(obj, key, data)
 
     def set_in_reply_to(self, obj, key, data, from_json):
         if from_json:
@@ -76,22 +87,26 @@ class AttrSetter(object):
             return self._pump.activityobject.ActivityObject(jsondata=data)
 
     def set_likes(self, obj, key, data, from_json):
+        #TODO not finished
         if from_json:
-            setattr(obj, key, "likes goes here")
+            setattr(obj, key, data)
 
     def set_links(self, obj, key, data, from_json):
+        #TODO not finished
         if from_json:
-            setattr(obj, key, "links goes here")
+            setattr(obj, key, data)
 
     def set_date(self, obj, key, data, from_json):
+        #TODO not finished
         if from_json:
-            setattr(obj, key, "date goes here")
+            setattr(obj, key, data)
 
     def set_replies(self, obj, key, data, from_json):
+        #TODO not finished
         if from_json:
-            setattr(obj, key, "replies goes here")
+            setattr(obj, key, data)
 
     def set_shares(self, obj, key, data, from_json):
+        #TODO not finished
         if from_json:
-            setattr(obj, key, "shares goes here")
-
+            setattr(obj, key, data)

@@ -30,14 +30,12 @@ from pypump.compatability import *
 from pypump.exception import PyPumpException
 
 # load models
-#from pypump.models.note import Note
 from pypump.models.comment import Comment
-from pypump.models.person import Person
 from pypump.models.image import Image
 from pypump.models.location import Location
 from pypump.models.activity import Activity
 from pypump.models.collection import Collection, Public
-import pypump.models.activityobject
+import pypump.newmodels
 import pypump.util
 
 class PyPump(object):
@@ -98,12 +96,11 @@ class PyPump(object):
 
     def populate_models(self):
         # todo: change me
-        self.activityobject = pypump.models.activityobject
-        self.activityobject.ActivityObject._pump = self
-        self.activityobject.attr_setter = pypump.util.AttrSetter(pypump=self)
+        self.newmodels = pypump.newmodels
+        self.newmodels.ActivityObject._pump = self
+        self.newmodels.attribute = pypump.util.Attribute(pypump=self)
 
-        self.Note = self.activityobject.Note
-        #self.Note._pump = self
+        self.Note = self.newmodels.Note
 
         self.Collection = Collection
         self.Collection._pump = self
@@ -114,8 +111,7 @@ class PyPump(object):
         self.Image = Image
         self.Image._pump = self
 
-        self.Person = self.activityobject.Person
-        #self.Person._pump = self
+        self.Person = self.newmodels.Person
 
         self.Location = Location
         self.Location._pump = self
