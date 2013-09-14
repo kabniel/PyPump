@@ -30,8 +30,6 @@ from pypump.compatability import *
 from pypump.exception import PyPumpException
 
 # load models
-from pypump.models.comment import Comment
-from pypump.models.image import Image
 from pypump.models.location import Location
 from pypump.models.collection import Collection, Public
 import pypump.newmodels
@@ -100,17 +98,11 @@ class PyPump(object):
         self.newmodels.attribute = pypump.util.Attribute(pypump=self)
 
         self.Note = self.newmodels.Note
+        self.Person = self.newmodels.Person
+
 
         self.Collection = Collection
         self.Collection._pump = self
-
-        self.Comment = Comment
-        self.Comment._pump = self
-        
-        self.Image = Image
-        self.Image._pump = self
-
-        self.Person = self.newmodels.Person
 
         self.Location = Location
         self.Location._pump = self
