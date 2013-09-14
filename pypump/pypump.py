@@ -118,10 +118,6 @@ class PyPump(object):
 
         self.Public = Public
 
-        self.Activity = Activity
-        self.Activity._pump = self
-
-
     ##
     # getters to expose some data which might be useful
     ##

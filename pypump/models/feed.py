@@ -51,11 +51,11 @@ class ItemList(object):
         if not data or (self.stop and self.itercounter >= self.stop):
             raise StopIteration
 
-        if not self.feed.objectTypes:
-            obj = getattr(self.feed._pump, data["objectType"].capitalize())
-        else:
-            obj = getattr(self.feed._pump, self.feed.objectTypes)
-        obj = obj.unserialize(data)
+        if not data.get("objectType") and self.feed.objectTypes:
+            #inject object type into data, because Evan likes to save a few bits
+            data["objectType"] = self.feed.objectTypes
+        objekt = getattr(self.feed._pump.newmodels, data["objectType"])
+        obj = objekt(jsondata=data)
         self.previous_id = obj.id
         self.itercounter +=1
         return obj

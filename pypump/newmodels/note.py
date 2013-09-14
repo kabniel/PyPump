@@ -9,7 +9,6 @@ class Note(ActivityObject):
     _attribute_map = dict()
 
     def __init__(self, *args, **kwargs):
-        print('note.__init__')
         # Let ActivityObject handle common things first
         super(Note, self).__init__(*args, **kwargs)
 

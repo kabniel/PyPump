@@ -10,7 +10,6 @@ class Person(ActivityObject):
     _attribute_map = {"preferred_username": "preferredUsername"}
 
     def __init__(self, webfinger=None, *args, **kwargs):
-        print('person init')
         # If a webfinger is entered, grab json from API and re-init
         if webfinger:
             self.username, self.server = webfinger.split("@")

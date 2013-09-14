@@ -1,9 +1,11 @@
 class Attribute(object):
 
     _strings = ["content", "display_name", "id", "object_type",
-                "summary", "url", "preferred_username"]
+                "summary", "url", "preferred_username", "verb"]
 
     _dates = ["updated", "published"]
+
+    _objects = ["generator", "actor", "obj", "author", "in_reply_to"]
 
     def __init__(self, pypump=None):
         self._pump = pypump
@@ -28,14 +30,14 @@ class Attribute(object):
             # set date attributes
             self.set_date(obj, key, data, from_json)
 
-        elif key == "author":
-            self.set_person(obj, key, data, from_json)
+        elif key in self._objects:
+            # set objects
+            self.set_object(obj, key, data, from_json)
+
         elif key == "downstream_duplicates":
             self.set_downstream_duplicates(obj, key, data, from_json)
         elif key == "image":
             self.set_image(obj, key, data, from_json)
-        elif key == "in_reply_to":
-            self.set_in_reply_to(obj, key, data, from_json)
         elif key == "likes":
             self.set_likes(obj, key, data, from_json)
         elif key == "links":
@@ -52,10 +54,6 @@ class Attribute(object):
         #TODO not finished
         if from_json:
             setattr(obj, key, data)
-
-    def set_person(self, obj, key, data, from_json):
-        if from_json:
-            setattr(obj, key, self.get_object(data))
 
     def set_string(self, obj, key, data, from_json):
         setattr(obj, key, data)
@@ -76,21 +74,18 @@ class Attribute(object):
         if from_json:
             setattr(obj, key, data)
 
-    def set_in_reply_to(self, obj, key, data, from_json):
-        if from_json:
-            setattr(obj, key, self.get_object(data))
-
     def get_object(self, data):
         try:
-            print data
-            print data['objectType'].capitalize()
             objekt = getattr(self._pump.newmodels, data["objectType"].capitalize())
-            print('found')
             return objekt(jsondata=data)
         except:
-            print('except')
+            print('warning: class for {0!r} not found'.format(data["objectType"]))
             # fall back to base activity object
             return self._pump.newmodels.ActivityObject(jsondata=data)
+
+    def set_object(self, obj, key, data, from_json):
+        if from_json:
+            setattr(obj, key, self.get_object(data))
 
     def set_likes(self, obj, key, data, from_json):
         #TODO not finished
