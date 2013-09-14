@@ -44,3 +44,30 @@ class ActivityObject(object):
     def __init__(self, *args, **kwargs):
         attr_map = ActivityObject._attribute_map
         self._pump.newmodels.attribute.parse_map(self, attr_map, *args, **kwargs)
+
+    def _post_activity(self, activity, unserialize=True):
+        """ Posts a activity to feed """
+        # I think we always want to post to feed
+        feed_url = "{proto}://{server}/api/user/{username}/feed".format(
+            proto=self._pump.protocol,
+            server=self._pump.server,
+            username=self._pump.nickname
+        )
+
+        data = self._pump.request(feed_url, method="POST", data=activity)
+
+        if not data:
+            return False
+
+        if "error" in data:
+            raise PumpException(data["error"])
+
+        if unserialize:
+            if "target" in data:
+                # we probably want to unserialize target if it's there
+                # true for collection.{add,remove}
+                self.__init__(jsondata = data["target"])
+            else:
+                self.__init__(jsondata = data["object"])
+
+        return True
