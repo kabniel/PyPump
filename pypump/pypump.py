@@ -33,7 +33,6 @@ from pypump.exception import PyPumpException
 from pypump.models.comment import Comment
 from pypump.models.image import Image
 from pypump.models.location import Location
-from pypump.models.activity import Activity
 from pypump.models.collection import Collection, Public
 import pypump.newmodels
 import pypump.util
