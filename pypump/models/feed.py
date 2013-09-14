@@ -54,7 +54,7 @@ class ItemList(object):
         if not data.get("objectType") and self.feed.objectTypes:
             #inject object type into data, because Evan likes to save a few bits
             data["objectType"] = self.feed.objectTypes
-        objekt = getattr(self.feed._pump.newmodels, data["objectType"])
+        objekt = getattr(self.feed._pump.newmodels, data["objectType"].capitalize())
         obj = objekt(jsondata=data)
         self.previous_id = obj.id
         self.itercounter +=1
