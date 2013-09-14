@@ -4,13 +4,13 @@ from pypump.models.feed import Inbox
 class Person(ActivityObject):
     """ pump.io Person object """
 
-    # attributes that we dont want
+    # parent attributes that we dont want
     _ignore_attr = ["attachments",]
-
+    # attributes unique to this class
     _attribute_map = {"preferred_username": "preferredUsername"}
 
     def __init__(self, webfinger=None, *args, **kwargs):
-        print('person.__init__')
+        print('person init')
         # If a webfinger is entered, grab json from API and re-init
         if webfinger:
             self.username, self.server = webfinger.split("@")
@@ -25,7 +25,7 @@ class Person(ActivityObject):
 
         else:
             # Let ActivityObject handle common things first
-            super(Person, self).__init__(ignore_attr=self._ignore_attr, *args, **kwargs)
+            super(Person, self).__init__(*args, **kwargs)
 
             self.username, self.server = self.id[5:].split("@")
 
@@ -36,3 +36,7 @@ class Person(ActivityObject):
 
 
     # TODO Add Person-specific methods and properties here
+    # lists
+    # followers
+    # following
+    # outbox

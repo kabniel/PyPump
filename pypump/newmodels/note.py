@@ -3,12 +3,14 @@ from pypump.newmodels.activityobject import ActivityObject
 class Note(ActivityObject):
     """ pump.io Note object """
 
-    # attributes that we dont want
-    _noattr = ["attachments", "display_name", "image", "summary"]
+    # parent attributes that we dont want
+    _ignore_attr = ["attachments", "display_name", "image", "summary"]
+    # attributes unique to this class
+    _attribute_map = dict()
 
     def __init__(self, *args, **kwargs):
         print('note.__init__')
         # Let ActivityObject handle common things first
-        super(Note, self).__init__(noattr=self._noattr, *args, **kwargs)
+        super(Note, self).__init__(*args, **kwargs)
 
     # TODO Add Note-specific methods and stuff here

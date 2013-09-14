@@ -17,7 +17,7 @@
 
 class ActivityObject(object):
     """ Super class for all activity objects """
-
+    _ignore_attr = list()
     _attribute_map = {
         "attachments": "attachments",
         "author": "author",

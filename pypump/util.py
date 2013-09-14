@@ -72,6 +72,7 @@ class Attribute(object):
 
     def set_image(self, obj, key, data, from_json):
         #TODO not finished
+        #need to handle different types, for profiles objectType is not set
         if from_json:
             setattr(obj, key, data)
 
@@ -81,10 +82,15 @@ class Attribute(object):
 
     def get_object(self, data):
         try:
-            objekt = getattr(self._pump.activityobject, data["objectType"].capitalize())
+            print data
+            print data['objectType'].capitalize()
+            objekt = getattr(self._pump.newmodels, data["objectType"].capitalize())
+            print('found')
             return objekt(jsondata=data)
         except:
-            return self._pump.activityobject.ActivityObject(jsondata=data)
+            print('except')
+            # fall back to base activity object
+            return self._pump.newmodels.ActivityObject(jsondata=data)
 
     def set_likes(self, obj, key, data, from_json):
         #TODO not finished
@@ -97,7 +103,7 @@ class Attribute(object):
             setattr(obj, key, data)
 
     def set_date(self, obj, key, data, from_json):
-        #TODO not finished
+        #TODO not finished, we should convert to datetime object
         if from_json:
             setattr(obj, key, data)
 

@@ -115,10 +115,10 @@ class Activity(AbstractModel):
             # author is not set for posted objects in inbox/major, so we add it
             dataobj["author"] = data["actor"]
 
-        obj = cls._pump.activityobject.attr_setter.get_object(dataobj)
+        obj = cls._pump.newmodels.attribute.get_object(dataobj)
 
         verb = data["verb"]
-        actor = cls._pump.activityobject.attr_setter.get_object(data["actor"])
+        actor = cls._pump.newmodels.attribute.get_object(data["actor"])
         # generator is not always there (at least not for verb:'update' obj:Person)
         generator = Generator.unserialize(data["generator"]) if "generator" in data else None
         updated = parse(data["updated"])
