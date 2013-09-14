@@ -1,6 +1,7 @@
 from pypump.newmodels.activityobject import ActivityObject
+from pypump.newmodels.mixin import *
 
-class Note(ActivityObject):
+class Note(ActivityObject, Likeable, Shareable, Commentable, Deleteable):
     """ pump.io Note object """
 
     # parent attributes that we dont want
